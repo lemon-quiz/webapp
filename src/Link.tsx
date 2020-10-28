@@ -1,12 +1,13 @@
-/* eslint-disable jsx-a11y/anchor-has-content */
+/* eslint-disable */
 import React from 'react';
-import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import MuiLink from '@material-ui/core/Link';
 
-const NextComposed = React.forwardRef(function NextComposed(props, ref) {
+
+
+const NextComposed = React.forwardRef(function NextComposed(props: any, ref: any) {
   const { as, href, ...other } = props;
 
   return (
@@ -16,15 +17,10 @@ const NextComposed = React.forwardRef(function NextComposed(props, ref) {
   );
 });
 
-NextComposed.propTypes = {
-  as: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  href: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  prefetch: PropTypes.bool,
-};
 
 // A styled version of the Next.js Link component:
 // https://nextjs.org/docs/#with-link
-function Link(props) {
+function Link(props: any) {
   const {
     href,
     activeClassName = 'active',
@@ -49,15 +45,4 @@ function Link(props) {
   );
 }
 
-Link.propTypes = {
-  activeClassName: PropTypes.string,
-  as: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  className: PropTypes.string,
-  href: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  innerRef: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-  naked: PropTypes.bool,
-  onClick: PropTypes.func,
-  prefetch: PropTypes.bool,
-};
-
-export default React.forwardRef((props, ref) => <Link {...props} innerRef={ref} />);
+export default React.forwardRef((props: any, ref) => <Link {...props} innerRef={ref} />);
