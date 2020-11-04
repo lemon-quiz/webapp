@@ -10,8 +10,10 @@ import {
 } from '../components/Provider/AppContext';
 import AccountsService from "../services/accounts.service";
 import {ApiService, StoreService, CookiesService} from 'react-miniverse';
-import {AxiosError} from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 import {ProfileInterface} from "../module/accounts.module";
+import SnackbarService from "../services/snackbar.service";
+import Snackbar from "../components/Snackbar/Snackbar";
 
 const cache = createIntlCache();
 
@@ -20,19 +22,36 @@ function initServices() {
   const cookiesService = new CookiesService();
   const apiInstance = new ApiService(cookiesService);
   const accountsService = new AccountsService(apiInstance, storeService, cookiesService);
+  const snackbarService = new SnackbarService();
 
   return {
     cookiesService,
     apiInstance,
     accountsService,
-    storeService
+    storeService,
+    snackbarService
   }
 }
 
 let globalServices = initServices();
 
 function MyApp(props: any) {
-  const {Component, pageProps, profile, _store} = props;
+  const {Component, pageProps, profile, _store, isAuthorized} = props;
+
+  useEffect(() => {
+    globalServices.apiInstance.setResponseMiddleWare((response: AxiosResponse | AxiosError) => {
+      if ((response as AxiosError).isAxiosError) {
+
+        const cast = (response as AxiosError);
+        console.log({cast});
+        globalServices.snackbarService.error(`${cast.response?.status} ${cast.response?.statusText} ${cast.response?.data?.message}`);
+
+
+        return Promise.reject(response);
+      }
+      return response;
+    })
+  }, []);
 
   if (typeof window !== 'undefined') {
     globalServices.storeService.import(_store);
@@ -80,6 +99,10 @@ function MyApp(props: any) {
     renderTheme = adminTheme;
   }
 
+  if (!isAuthorized) {
+    return <>Nope</>;
+  }
+
   return (
     <>
       <Helmet
@@ -99,6 +122,7 @@ function MyApp(props: any) {
         <AppProvider value={{profile, locale, ...globalServices}}>
           <RawIntlProvider value={intl}>
             <Component {...pageProps} />
+            <Snackbar/>
           </RawIntlProvider>
         </AppProvider>
       </ThemeProvider>
@@ -123,19 +147,28 @@ MyApp.getInitialProps = async ({Component, ctx}: any) => {
     await accountsService.profile().toPromise().catch((error: AxiosError) => console.warn(error.message));
   }
 
+  let isAuthorized = true;
+  if (Component.isAuthorized) {
+    isAuthorized = await Component.isAuthorized({services});
+  }
+
+  let pageProps = {};
+  if (isAuthorized && Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx, services);
+  }
+
   let _store = {};
   await storeService.export().then((store: any) => _store = store);
 
-  let pageProps = {};
-  if (Component.getInitialProps) {
-    pageProps = await Component.getInitialProps(ctx);
+  if (req) {
+    storeService.completeAll();
   }
 
   // @ts-ignore
   const {locale, messages, supportedLanguages} = req || window.__NEXT_DATA__.props;
 
   return {
-    pageProps, locale, messages, supportedLanguages, _store
+    pageProps, locale, messages, supportedLanguages, _store, isAuthorized
   };
 };
 

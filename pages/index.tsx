@@ -8,9 +8,6 @@ import Link from '../src/Link';
 import Copyright from '../src/Copyright';
 import Layout from "../components/Layout/Layout";
 import AppContext from "../components/Provider/AppContext";
-import AppTable from "../components/Table/AppTable";
-import ColumnDate from "../components/Table/Columns/ColumnDate";
-import Column from "../components/Table/Columns/Column";
 
 export default function Index() {
   const {formatMessage} = useIntl();

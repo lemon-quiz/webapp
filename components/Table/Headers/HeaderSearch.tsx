@@ -20,11 +20,12 @@ import {
 import {Backspace} from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
 import Sortable from "./Sortable";
-
+import setQueryParam from "../../../utils/setQueryParam";
 
 interface HeaderSearchInterface {
   column: string;
   label: string;
+  prefix?: string;
   sortable?: boolean;
 }
 const useStyles = makeStyles(() => ({
@@ -33,7 +34,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function HeaderSearch({column, label, sortable}: HeaderSearchInterface) {
+export default function HeaderSearch({column, label, prefix, sortable}: HeaderSearchInterface) {
   const router = useRouter();
   const classes = useStyles();
   const [value, setValue] = useState(router.query[column] || '');
@@ -49,11 +50,12 @@ export default function HeaderSearch({column, label, sortable}: HeaderSearchInte
       )
       .subscribe((value) => {
         const {query, pathname} = router;
-        query[column] = value;
-        query.page = '1';
+        let params = setQueryParam(query, column, value, prefix);
+        params = setQueryParam(params, 'page', 1, prefix);
+
         return from(router.push({
           pathname,
-          query
+          query: params
         }))
       })
     return () => {
@@ -96,7 +98,7 @@ export default function HeaderSearch({column, label, sortable}: HeaderSearchInte
           />
         </FormControl>
       </Box>
-      {sortable && <Sortable column={column}/>}
+      {sortable && <Sortable column={column} prefix={prefix}/>}
     </Box>
   </TableCell>;
 }

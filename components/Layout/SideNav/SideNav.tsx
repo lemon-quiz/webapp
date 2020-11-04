@@ -7,6 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
 import React from "react";
 import Link from "next/link";
+import {ControlCamera, People} from "@material-ui/icons";
 
 function ListItemLink(props: any) {
   const {href, ...rest} = props;
@@ -34,9 +35,17 @@ export default function SideNav() {
 
         <ListItemLink href="/admin/accounts">
           <ListItemIcon>
-            <MailIcon/>
+            <People />
           </ListItemIcon>
-          <ListItemText primary={'Admin - Accounts'}/>
+          <ListItemText primary={'Accounts'}/>
+        </ListItemLink>
+
+
+        <ListItemLink href="/admin/roles">
+          <ListItemIcon>
+            <ControlCamera />
+          </ListItemIcon>
+          <ListItemText primary={'Roles'}/>
         </ListItemLink>
 
 

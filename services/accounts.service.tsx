@@ -1,7 +1,7 @@
 import {AxiosResponse} from "axios";
 import {Observable} from "rxjs";
 import {tap} from "rxjs/operators";
-import {ProfileInterface} from "../module/accounts.module";
+import {ProfileInterface, RolesEntity} from "../module/accounts.module";
 import {
   ApiServiceInterface,
   StoreServiceInterface
@@ -11,6 +11,7 @@ import {
   StoreCacheInterface
 } from "react-miniverse/src/interfaces";
 import {PaginatedResources} from "../module/PaginatedResources";
+import {EventsServiceInterface} from "../module/events.module";
 
 interface AccountLoginInterface {
   username: string;
@@ -56,8 +57,32 @@ export default class AccountsService {
     );
   }
 
-  public getAccounts<T = PaginatedResources<ProfileInterface>>(params?: RequestParamsInterface): StoreCacheInterface<T> {
+  public access(role: string, method: string) {
+    const profile: ProfileInterface = this.store.getStatic(this.namespace, 'profile');
+    if (!profile?.roles) {
+      return false;
+    }
 
+    const found = profile.roles.find((item) => item.name === role);
+
+    if (!found) {
+      return false;
+    }
+
+    switch (method) {
+      case "read":
+        return found.pivot.req_get;
+      case "write":
+        return found.pivot.req_post;
+      case "update":
+        return found.pivot.req_put;
+      case "delete":
+        return found.pivot.req_delete;
+      default: return false;
+    }
+  }
+
+  public getAccounts<T = PaginatedResources<ProfileInterface>>(params?: RequestParamsInterface): StoreCacheInterface<T> {
     return this.store.cache(
       this.namespace,
       'accounts',
@@ -66,8 +91,76 @@ export default class AccountsService {
     );
   }
 
-  private getBaseUrl(path?: string): string {
+  public getAccount<T = ProfileInterface>(id: string | number, params?: RequestParamsInterface): StoreCacheInterface<T> {
+    return this.store.cache(
+      this.namespace,
+      'account',
+      {id, ...params},
+      this.api.get(this.getBaseUrl('/accounts', id), params)
+    );
+  }
+
+  public updateAccount(id: any, data: RequestParamsInterface): Observable<AxiosResponse> {
+    return this.api.put(this.getBaseUrl('/accounts', id), data);
+  }
+
+  public updateAccountRole(id: any, data: any) {
+    return this.api.post(this.getBaseUrl('/accounts', id, 'role'), data);
+  }
+
+  public createAccount(data: RequestParamsInterface): Observable<AxiosResponse> {
+    return this.api.post(this.getBaseUrl('/accounts'), data);
+  }
+
+  public getRoles<T = PaginatedResources<RolesEntity>>(params?: RequestParamsInterface): StoreCacheInterface<T> {
+    return this.store.cache(
+      this.namespace,
+      'roles',
+      params,
+      this.api.get(this.getBaseUrl('/roles'), params)
+    );
+  }
+
+  public getRole<T = RolesEntity>(id: string | number, params?: RequestParamsInterface): StoreCacheInterface<T> {
+    return this.store.cache(
+      this.namespace,
+      'role',
+      {id, ...params},
+      this.api.get(this.getBaseUrl('/roles', id), params)
+    );
+  }
+
+  public deleteRole(id: string | number) {
+    return this.api.delete(this.getBaseUrl('/roles', id));
+  }
+
+  public getEvents<T = PaginatedResources<EventsServiceInterface>>(params?: RequestParamsInterface): StoreCacheInterface<T> {
+    return this.store.cache(
+      this.namespace,
+      'events',
+      params,
+      this.api.get(this.getBaseUrl('/events'), params)
+    );
+  }
+
+  public updateRole(id: any, data: RequestParamsInterface): Observable<AxiosResponse> {
+    return this.api.put(this.getBaseUrl('/roles', id), data);
+  }
+
+  public createRole(data: RequestParamsInterface): Observable<AxiosResponse> {
+    return this.api.post(this.getBaseUrl('/roles'), data);
+  }
+
+  private getBaseUrl(path?: string, id?: string | number, action?: string): string {
     if (process.env.NEXT_PUBLIC_API_ACCOUNTS) {
+      if (id && action) {
+        return `${process.env.NEXT_PUBLIC_API_ACCOUNTS}${path}/${id}/${action}`;
+      }
+
+      if (id) {
+        return `${process.env.NEXT_PUBLIC_API_ACCOUNTS}${path}/${id}`;
+      }
+
       return `${process.env.NEXT_PUBLIC_API_ACCOUNTS}${path}`;
     }
 

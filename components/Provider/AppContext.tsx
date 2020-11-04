@@ -4,11 +4,13 @@ import {
   ApiServiceInterface,
   CookiesServiceInterface, StoreServiceInterface
 } from "react-miniverse/src/interfaces";
+import SnackbarService from "../../services/snackbar.service";
 
 export interface AppContextInterface {
   apiInstance: ApiServiceInterface;
   cookiesService: CookiesServiceInterface;
   accountsService: AccountsService;
+  snackbarService: SnackbarService;
   storeService: StoreServiceInterface;
   profile?: any;
 

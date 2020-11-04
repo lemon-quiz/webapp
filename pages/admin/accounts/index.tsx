@@ -9,11 +9,15 @@ import AppTable from "../../../components/Table/AppTable";
 import Column from "../../../components/Table/Columns/Column";
 import ColumnDate from "../../../components/Table/Columns/ColumnDate";
 import {ProfileInterface} from "../../../module/accounts.module";
+import ColumnActions from "../../../components/Table/Columns/ColumnActions";
+import getPrefixedValues from "../../../utils/getPrefixedValues";
 
-export default function AccountsIndex(): ReactElement {
+const prefix = 'acc';
+
+function AccountsIndex(): ReactElement {
   const {accountsService} = useContext<AppContextInterface>(AppContext);
   const router = useRouter();
-  const {query: {page, q, order_field, order_dir, name, email}} = router;
+  const {page, q, order_field, order_dir, name, email} = getPrefixedValues(router.query, prefix);
 
   const params = {
     page: page ?? 1,
@@ -23,7 +27,7 @@ export default function AccountsIndex(): ReactElement {
     order_field: order_field,
     order_dir: order_dir,
   }
-  const accounts = useColdOrLoad(accountsService.getAccounts(params), params);
+  const accounts = useColdOrLoad(accountsService.getAccounts(params), params, true);
 
   return (
     <Layout>
@@ -31,6 +35,7 @@ export default function AccountsIndex(): ReactElement {
         {() =>
           <Pending loading={!accounts}>
             <AppTable<ProfileInterface>
+              prefix={prefix}
               resource={accounts}>
               <Column label={'Name'} column={'name'} searchable sortable/>
               <Column label={'E-mail'} column={'email'} searchable sortable/>
@@ -41,6 +46,7 @@ export default function AccountsIndex(): ReactElement {
                           column={'updated_at'}
                           format={'fromNow'}
                           sortable/>
+              <ColumnActions column={'id'} />
             </AppTable>
           </Pending>
         }
@@ -48,3 +54,9 @@ export default function AccountsIndex(): ReactElement {
     </Layout>
   );
 }
+
+AccountsIndex.isAuthorized = async ({services}: { services: AppContextInterface }) => {
+  return services.storeService.has('AccountsService', 'profile');
+}
+
+export default AccountsIndex;

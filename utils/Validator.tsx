@@ -7,6 +7,12 @@ export default class Validators {
     }
   }
 
+  static boolean = (errors: any, name: string, values: any) => {
+    if (values[name] !== false && values[name] !== true) {
+      errors[name] = `${name} should be true or false.`;
+    }
+  }
+
   static password = (errors: any, name: string, values: any) => {
     if (validator.isEmpty(values[name] ?? '')) {
       errors[name] = `${name} is required`;

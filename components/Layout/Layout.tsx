@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react';
+import React, {ReactNode} from 'react';
 import clsx from 'clsx';
 import {makeStyles, useTheme} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Layout({children}: { children: ReactElement }) {
+export default function Layout({children}: { children: ReactNode }) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
