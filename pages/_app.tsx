@@ -1,19 +1,20 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {ThemeProvider} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import {createIntl, createIntlCache, RawIntlProvider} from 'react-intl';
+import { ThemeProvider } from '@material-ui/core/styles';
+import { AxiosError, AxiosResponse } from 'axios';
+import React, { useEffect, useMemo, useState } from 'react';
 import Helmet from 'react-helmet';
-import theme from '../theme/public';
-import adminTheme from '../theme/admin';
+import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
+import { ApiService, CookiesService, StoreService } from 'react-miniverse';
+
 import {
-  AppProvider
+  AppProvider,
 } from '../components/Provider/AppContext';
-import AccountsService from "../services/accounts.service";
-import {ApiService, StoreService, CookiesService} from 'react-miniverse';
-import {AxiosError, AxiosResponse} from "axios";
-import {ProfileInterface} from "../module/accounts.module";
-import SnackbarService from "../services/snackbar.service";
-import Snackbar from "../components/Snackbar/Snackbar";
+import Snackbar from '../components/Snackbar/Snackbar';
+import { ProfileInterface } from '../module/accounts.module';
+import AccountsService from '../services/accounts.service';
+import SnackbarService from '../services/snackbar.service';
+import adminTheme from '../theme/admin';
+import theme from '../theme/public';
 
 const cache = createIntlCache();
 
@@ -29,28 +30,27 @@ function initServices() {
     apiInstance,
     accountsService,
     storeService,
-    snackbarService
-  }
+    snackbarService,
+  };
 }
 
 let globalServices = initServices();
 
 function MyApp(props: any) {
-  const {Component, pageProps, profile, _store, isAuthorized} = props;
+  const {
+    Component, pageProps, profile, _store, isAuthorized,
+  } = props;
 
   useEffect(() => {
     globalServices.apiInstance.setResponseMiddleWare((response: AxiosResponse | AxiosError) => {
       if ((response as AxiosError).isAxiosError) {
-
         const cast = (response as AxiosError);
-        console.log({cast});
         globalServices.snackbarService.error(`${cast.response?.status} ${cast.response?.statusText} ${cast.response?.data?.message}`);
-
 
         return Promise.reject(response);
       }
       return response;
-    })
+    });
   }, []);
 
   if (typeof window !== 'undefined') {
@@ -60,19 +60,23 @@ function MyApp(props: any) {
   const [authTheme, setAuthTheme] = useState(globalServices.storeService.has('AccountsService', 'profile'));
 
   useEffect(() => {
-    const sub = globalServices.accountsService.profile().hot().subscribe((profile: ProfileInterface) => {
-      if (!profile) {
-        setAuthTheme(false);
-        return;
-      }
+    const sub = globalServices.accountsService
+      .profile()
+      .hot()
+      .subscribe((hasProfile: ProfileInterface) => {
+        if (!hasProfile) {
+          setAuthTheme(false);
+          return;
+        }
 
-      setAuthTheme(true);
+        setAuthTheme(true);
 
-      return () => {
-        sub.unsubscribe();
-      }
-    });
-  }, [])
+        // eslint-disable-next-line consistent-return
+        return () => {
+          sub.unsubscribe();
+        };
+      });
+  }, []);
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -82,7 +86,7 @@ function MyApp(props: any) {
     }
   }, []);
 
-  const {locale, messages} = props;
+  const { locale, messages } = props;
   const intl = useMemo(() => createIntl(
     {
       locale,
@@ -91,8 +95,7 @@ function MyApp(props: any) {
       },
     },
     cache,
-  ), [])
-
+  ), []);
 
   let renderTheme = theme;
   if (authTheme) {
@@ -106,23 +109,23 @@ function MyApp(props: any) {
   return (
     <>
       <Helmet
-        htmlAttributes={{lang: locale}}
+        htmlAttributes={{ lang: locale }}
         title="Hello next.js!"
         meta={[
           {
             name: 'viewport',
             content: 'width=device-width, initial-scale=1, width=device-width',
           },
-          {property: 'og:title', content: 'Hello next.js!'},
+          { property: 'og:title', content: 'Hello next.js!' },
         ]}
       />
       <ThemeProvider theme={renderTheme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline/>
-        <AppProvider value={{profile, locale, ...globalServices}}>
+        <CssBaseline />
+        <AppProvider value={{ profile, locale, ...globalServices }}>
           <RawIntlProvider value={intl}>
             <Component {...pageProps} />
-            <Snackbar/>
+            <Snackbar />
           </RawIntlProvider>
         </AppProvider>
       </ThemeProvider>
@@ -130,8 +133,8 @@ function MyApp(props: any) {
   );
 }
 
-MyApp.getInitialProps = async ({Component, ctx}: any) => {
-  const {req} = ctx;
+MyApp.getInitialProps = async ({ Component, ctx }: any) => {
+  const { req } = ctx;
   let services;
   if (req) {
     services = initServices();
@@ -141,15 +144,17 @@ MyApp.getInitialProps = async ({Component, ctx}: any) => {
     services = globalServices;
   }
 
-  const {cookiesService, accountsService, storeService} = services;
+  const { cookiesService, accountsService, storeService } = services;
 
   if (cookiesService.get('token') && !storeService.has('AccountsService', 'profile')) {
-    await accountsService.profile().toPromise().catch((error: AxiosError) => console.warn(error.message));
+    await accountsService.profile().toPromise().catch((error: AxiosError) => {
+      console.warn(error.message);
+    });
   }
 
   let isAuthorized = true;
   if (Component.isAuthorized) {
-    isAuthorized = await Component.isAuthorized({services});
+    isAuthorized = await Component.isAuthorized({ services });
   }
 
   let pageProps = {};
@@ -157,18 +162,20 @@ MyApp.getInitialProps = async ({Component, ctx}: any) => {
     pageProps = await Component.getInitialProps(ctx, services);
   }
 
+  // eslint-disable-next-line no-underscore-dangle
   let _store = {};
-  await storeService.export().then((store: any) => _store = store);
+  await storeService.export().then((store: any) => { _store = store; });
 
   if (req) {
     storeService.completeAll();
   }
 
   // @ts-ignore
-  const {locale, messages, supportedLanguages} = req || window.__NEXT_DATA__.props;
+  // eslint-disable-next-line no-underscore-dangle
+  const { locale, messages, supportedLanguages } = req || window.__NEXT_DATA__.props;
 
   return {
-    pageProps, locale, messages, supportedLanguages, _store, isAuthorized
+    pageProps, locale, messages, supportedLanguages, _store, isAuthorized,
   };
 };
 

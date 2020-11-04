@@ -1,17 +1,18 @@
-import {AxiosResponse} from "axios";
-import {Observable} from "rxjs";
-import {tap} from "rxjs/operators";
-import {ProfileInterface, RolesEntity} from "../module/accounts.module";
+import { AxiosResponse } from 'axios';
 import {
   ApiServiceInterface,
-  StoreServiceInterface
-} from "react-miniverse";
+  StoreServiceInterface,
+} from 'react-miniverse';
 import {
   CookiesServiceInterface,
-  StoreCacheInterface
-} from "react-miniverse/src/interfaces";
-import {PaginatedResources} from "../module/PaginatedResources";
-import {EventsServiceInterface} from "../module/events.module";
+  StoreCacheInterface,
+} from 'react-miniverse/src/interfaces';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+import { ProfileInterface, RolesEntity } from '../module/accounts.module';
+import { EventsServiceInterface } from '../module/events.module';
+import { PaginatedResources } from '../module/PaginatedResources';
 
 interface AccountLoginInterface {
   username: string;
@@ -23,13 +24,13 @@ interface RequestParamsInterface {
 }
 
 export default class AccountsService {
-
   private namespace = 'AccountsService';
 
   constructor(
     private api: ApiServiceInterface,
     private store: StoreServiceInterface,
-    private cookiesService: CookiesServiceInterface
+    private cookiesService: CookiesServiceInterface,
+    // eslint-disable-next-line no-empty-function
   ) {
   }
 
@@ -42,9 +43,9 @@ export default class AccountsService {
   public login(data: AccountLoginInterface): Observable<AxiosResponse> {
     return this.api.post(this.getBaseUrl('/login'), data)
       .pipe(
-        tap((data: any) => {
-          this.cookiesService.set('token', data.access_token)
-        })
+        tap((next: any) => {
+          this.cookiesService.set('token', next.access_token);
+        }),
       );
   }
 
@@ -53,7 +54,7 @@ export default class AccountsService {
       this.namespace,
       'profile',
       undefined,
-      this.api.get(this.getBaseUrl('/profile'))
+      this.api.get(this.getBaseUrl('/profile')),
     );
   }
 
@@ -70,13 +71,13 @@ export default class AccountsService {
     }
 
     switch (method) {
-      case "read":
+      case 'read':
         return found.pivot.req_get;
-      case "write":
+      case 'write':
         return found.pivot.req_post;
-      case "update":
+      case 'update':
         return found.pivot.req_put;
-      case "delete":
+      case 'delete':
         return found.pivot.req_delete;
       default: return false;
     }
@@ -87,7 +88,7 @@ export default class AccountsService {
       this.namespace,
       'accounts',
       params,
-      this.api.get(this.getBaseUrl('/accounts'), params)
+      this.api.get(this.getBaseUrl('/accounts'), params),
     );
   }
 
@@ -95,8 +96,8 @@ export default class AccountsService {
     return this.store.cache(
       this.namespace,
       'account',
-      {id, ...params},
-      this.api.get(this.getBaseUrl('/accounts', id), params)
+      { id, ...params },
+      this.api.get(this.getBaseUrl('/accounts', id), params),
     );
   }
 
@@ -117,7 +118,7 @@ export default class AccountsService {
       this.namespace,
       'roles',
       params,
-      this.api.get(this.getBaseUrl('/roles'), params)
+      this.api.get(this.getBaseUrl('/roles'), params),
     );
   }
 
@@ -125,8 +126,8 @@ export default class AccountsService {
     return this.store.cache(
       this.namespace,
       'role',
-      {id, ...params},
-      this.api.get(this.getBaseUrl('/roles', id), params)
+      { id, ...params },
+      this.api.get(this.getBaseUrl('/roles', id), params),
     );
   }
 
@@ -139,7 +140,7 @@ export default class AccountsService {
       this.namespace,
       'events',
       params,
-      this.api.get(this.getBaseUrl('/events'), params)
+      this.api.get(this.getBaseUrl('/events'), params),
     );
   }
 

@@ -1,31 +1,32 @@
-import React, {useContext} from 'react';
-import {Field, Form} from 'react-final-form';
 import {
   Avatar,
   Button, Grid, Theme, Typography,
 } from '@material-ui/core';
-import {useIntl} from 'react-intl';
-import TextField from '../../components/Fields/TextField';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import {makeStyles} from "@material-ui/styles";
-import Validators from "../../utils/Validator";
-import CenteredBox from "../../components/Layout/CenteredBox";
-import AppContext, {AppContextInterface} from "../../components/Provider/AppContext";
-import {useRouter} from "next/router";
-import {FormResponse} from "../../utils/FormResponse";
+import { makeStyles } from '@material-ui/styles';
+import { useRouter } from 'next/router';
+import React, { useContext } from 'react';
+import { Field, Form } from 'react-final-form';
+import { useIntl } from 'react-intl';
+
+import { FormResponse } from '../../utils/FormResponse';
+import Validators from '../../utils/Validator';
+import TextField from '../Fields/TextField';
+import CenteredBox from '../Layout/CenteredBox';
+import AppContext, { AppContextInterface } from '../Provider/AppContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
-  }
+  },
 }));
 
 export default function LoginForm() {
-  const {formatMessage} = useIntl();
-  const router = useRouter()
+  const { formatMessage } = useIntl();
+  const router = useRouter();
   const classes = useStyles();
-  const {accountsService} = useContext<AppContextInterface>(AppContext);
+  const { accountsService } = useContext<AppContextInterface>(AppContext);
 
   const navigate = (res: any) => {
     if (res.isAxiosError) {
@@ -33,37 +34,33 @@ export default function LoginForm() {
     }
 
     router.push('/admin');
-  }
-
-  const onSubmit = async (data: any) => {
-    return await
-      FormResponse.finalFormResponse(
-        accountsService.login(data), navigate);
   };
 
-  const validate = (values: any) => {
-    return Validators.test(values, {
-      'username': [Validators.required],
-      'password': [Validators.required],
-    })
-  }
+  const onSubmit = async (data: any) => FormResponse.finalFormResponse(
+    accountsService.login(data), navigate,
+  );
+
+  const validate = (values: any) => Validators.test(values, {
+    username: [Validators.required],
+    password: [Validators.required],
+  });
 
   return (
     <Form
       onSubmit={onSubmit}
       validate={validate}
       render={(all: any) => {
-        const {handleSubmit, valid, submitFailed} = all;
+        const { handleSubmit, valid, submitFailed } = all;
         return (
           <form onSubmit={handleSubmit}>
             <CenteredBox>
               <Grid item>
                 <Avatar className={classes.avatar}>
-                  <LockOutlinedIcon/>
+                  <LockOutlinedIcon />
                 </Avatar>
               </Grid>
               <Typography component="h1" variant="h5">
-                {formatMessage({defaultMessage: 'Sign in'})}
+                {formatMessage({ defaultMessage: 'Sign in' })}
               </Typography>
               <Field
                 name="username"
@@ -72,7 +69,7 @@ export default function LoginForm() {
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                label={formatMessage({defaultMessage: 'Username'})}
+                label={formatMessage({ defaultMessage: 'Username' })}
               />
               <Field
                 name="password"
@@ -82,7 +79,7 @@ export default function LoginForm() {
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                label={formatMessage({defaultMessage: 'Password'})}
+                label={formatMessage({ defaultMessage: 'Password' })}
               />
               <Button
                 type="submit"
@@ -91,10 +88,12 @@ export default function LoginForm() {
                 color="primary"
                 disabled={!valid && !submitFailed}
               >
-                {formatMessage({defaultMessage: 'Sign in'})}
+                {formatMessage({ defaultMessage: 'Sign in' })}
               </Button>
             </CenteredBox>
-          </form>);
-      }}/>
+          </form>
+        );
+      }}
+    />
   );
 }

@@ -1,7 +1,8 @@
-import React from 'react';
-import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
-import Layout from "../components/Layout/Layout";
+import Container from '@material-ui/core/Container';
+import React from 'react';
+
+import Layout from '../components/Layout/Layout';
 
 export default function Index() {
   return (
