@@ -14,6 +14,10 @@ import { ProfileInterface, RolesEntity } from '../module/accounts.module';
 import { EventsServiceInterface } from '../module/events.module';
 import { PaginatedResources } from '../module/PaginatedResources';
 
+export type ExpectedRoleObject = {[key: string]: string};
+
+export type ExpectedRoleType = Array<string| ExpectedRoleObject>;
+
 interface AccountLoginInterface {
   username: string;
   password: string;
@@ -58,7 +62,22 @@ export default class AccountsService {
     );
   }
 
-  public access(role: string, method: string) {
+  public hasAccess(expectedRole: ExpectedRoleType): boolean {
+    return expectedRole.reduce((previous: boolean, current: string| ExpectedRoleObject) => {
+      if (!previous) {
+        return false;
+      }
+
+      if (typeof current === 'string') {
+        return this.accessPerRole(current, 'read');
+      }
+
+      const [role] = Object.keys(current);
+      return this.accessPerRole(role, current[role]);
+    }, true);
+  }
+
+  private accessPerRole(role: string, method: string) {
     const profile: ProfileInterface = this.store.getStatic(this.namespace, 'profile');
     if (!profile?.roles) {
       return false;

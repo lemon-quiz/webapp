@@ -13,6 +13,7 @@ import Column from '../../../components/Table/Columns/Column';
 import ColumnActions from '../../../components/Table/Columns/ColumnActions';
 import ColumnBoolean from '../../../components/Table/Columns/ColumnBoolean';
 import ColumnDate from '../../../components/Table/Columns/ColumnDate';
+import Access from '../../../core/Access';
 import { RolesEntity } from '../../../module/accounts.module';
 
 function RolesIndex(): ReactElement {
@@ -54,14 +55,16 @@ function RolesIndex(): ReactElement {
           </Typography>
         </Box>
         <Box flexGrow={0} alignSelf="center" p={1}>
-          <Button
-            startIcon={<Add />}
-            variant="contained"
-            color="primary"
-            onClick={() => push('/admin/roles/add')}
-          >
-            Add
-          </Button>
+          <Access expectedRole={[{ 'accounts-role': 'write' }]}>
+            <Button
+              startIcon={<Add />}
+              variant="contained"
+              color="primary"
+              onClick={() => push('/admin/roles/add')}
+            >
+              Add
+            </Button>
+          </Access>
         </Box>
       </Box>
 
@@ -88,7 +91,7 @@ function RolesIndex(): ReactElement {
                 format="fromNow"
                 sortable
               />
-              <ColumnActions column="id" handleDelete={handleDelete} />
+              <ColumnActions column="id" handleDelete={handleDelete} requiredRole="accounts-role" />
             </AppTable>
           </Pending>
         )}

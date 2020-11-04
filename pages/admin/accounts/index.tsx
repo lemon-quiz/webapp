@@ -1,3 +1,5 @@
+import { Box, Button, Typography } from '@material-ui/core';
+import { Add } from '@material-ui/icons';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useContext } from 'react';
 import { useColdOrLoad } from 'react-miniverse';
@@ -17,10 +19,10 @@ const prefix = 'acc';
 
 function AccountsIndex(): ReactElement {
   const { accountsService } = useContext<AppContextInterface>(AppContext);
-  const router = useRouter();
+  const { push, query } = useRouter();
   const {
     page, q, order_field, order_dir, name, email,
-  } = getPrefixedValues(router.query, prefix);
+  } = getPrefixedValues(query, prefix);
 
   const params = {
     page: page ?? 1,
@@ -34,6 +36,24 @@ function AccountsIndex(): ReactElement {
 
   return (
     <Layout>
+      <Box display="flex">
+        <Box flexGrow={1}>
+          <Typography variant="h4" gutterBottom>
+            Roles
+          </Typography>
+        </Box>
+        <Box flexGrow={0} alignSelf="center" p={1}>
+          <Button
+            startIcon={<Add />}
+            variant="contained"
+            color="primary"
+            onClick={() => push('/admin/accounts/add')}
+          >
+            Add
+          </Button>
+        </Box>
+      </Box>
+
       <AuthGuard>
         {() => (
           <Pending loading={!accounts}>

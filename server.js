@@ -1,13 +1,12 @@
 const express = require('express');
 const next = require('next');
 const Cookies = require('cookies');
-const httpProxy = require('http-proxy');
 const IntlPolyfill = require('intl');
 const { basename } = require('path');
 const accepts = require('accepts');
 const glob = require('glob');
 const { readFileSync } = require('fs');
-global.DOMParser = new (require('jsdom').JSDOM)().window.DOMParser;
+// global.DOMParser = new (require('jsdom').JSDOM)().window.DOMParser;
 
 Intl.NumberFormat = IntlPolyfill.NumberFormat;
 Intl.DateTimeFormat = IntlPolyfill.DateTimeFormat;

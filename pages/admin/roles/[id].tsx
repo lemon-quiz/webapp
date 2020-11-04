@@ -81,7 +81,7 @@ function Role() {
   );
 }
 
-Role.isAuthorized = async ({ services }: { services: AppContextInterface }) => services.storeService.has('AccountsService', 'profile');
+Role.isAuthorized = ({ services: { accountsService } }: { services: AppContextInterface }) => accountsService.hasAccess([{ 'accounts-role': 'update' }]);
 
 Role.getInitialProps = async (ctx: any, { accountsService }: AppContextInterface) => {
   if (ctx?.query?.id && ctx?.query?.id !== 'add') {

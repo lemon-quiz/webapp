@@ -96,7 +96,7 @@ function AccountForm({ account }: AccountFormInterface) {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  disabled={(!valid && !submitFailed) || !accountsService.access('accounts-user', 'update')}
+                  disabled={(!valid && !submitFailed) || !accountsService.hasAccess([{ 'accounts-user': 'update' }])}
                 >
                   {formatMessage({ defaultMessage: 'Save' })}
                 </Button>

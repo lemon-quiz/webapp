@@ -1,4 +1,5 @@
-import {BehaviorSubject, Observable} from "rxjs";
+/* eslint-disable no-underscore-dangle */
+import { BehaviorSubject, Observable } from 'rxjs';
 
 interface SnackInterface {
   type: 'error' | 'warning' | 'info' | 'success';
@@ -6,7 +7,6 @@ interface SnackInterface {
 }
 
 export default class SnackbarService {
-
   private _subject = new BehaviorSubject<SnackInterface | null>(null);
 
   public get subject(): Observable<SnackInterface | null> {
@@ -14,18 +14,18 @@ export default class SnackbarService {
   }
 
   public error(message: string) {
-    this._subject.next({type: 'error', message});
+    this._subject.next({ type: 'error', message });
   }
 
   public warning(message: string) {
-    this._subject.next({type: 'warning', message});
+    this._subject.next({ type: 'warning', message });
   }
 
   public info(message: string) {
-    this._subject.next({type: 'info', message});
+    this._subject.next({ type: 'info', message });
   }
 
   public success(message: string) {
-    this._subject.next({type: 'success', message});
+    this._subject.next({ type: 'success', message });
   }
 }
