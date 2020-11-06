@@ -137,6 +137,9 @@ MyApp.getInitialProps = async ({ Component, ctx }: any) => {
   const { req } = ctx;
   let services;
   if (req) {
+    const { storeService: closeService } = globalServices;
+    closeService.clearAll();
+
     services = initServices();
     services.cookiesService.withReq(req);
     globalServices = services;

@@ -1,14 +1,15 @@
-import React, {ReactNode} from 'react';
-import clsx from 'clsx';
-import {makeStyles, useTheme} from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import TopNav from "./TopNav/TopNav";
-import SideNav from "./SideNav/SideNav";
+import clsx from 'clsx';
+import React, { ReactNode } from 'react';
+
+import SideNav from './SideNav/SideNav';
+import TopNav from './TopNav/TopNav';
 
 const drawerWidth = 240;
 
@@ -74,10 +75,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Layout({children}: { children: ReactNode }) {
+export default function Layout({ children }: { children: ReactNode }) {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
   const handleDrawerClose = () => {
     setOpen(false);
@@ -85,10 +86,14 @@ export default function Layout({children}: { children: ReactNode }) {
 
   return (
     <div className={classes.root}>
-      <CssBaseline/>
-      <TopNav className={clsx(classes.appBar, {
-        [classes.appBarShift]: open,
-      })} setOpen={setOpen} open={open}/>
+      <CssBaseline />
+      <TopNav
+        className={clsx(classes.appBar, {
+          [classes.appBarShift]: open,
+        })}
+        setOpen={setOpen}
+        open={open}
+      />
       <Drawer
         variant="permanent"
         className={clsx(classes.drawer, {
@@ -104,15 +109,15 @@ export default function Layout({children}: { children: ReactNode }) {
       >
         <div className={classes.toolbar}>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronRightIcon/> :
-              <ChevronLeftIcon/>}
+            {theme.direction === 'rtl' ? <ChevronRightIcon />
+              : <ChevronLeftIcon />}
           </IconButton>
         </div>
-        <Divider/>
+        <Divider />
         <SideNav />
       </Drawer>
       <main className={classes.content}>
-        <div className={classes.toolbar}/>
+        <div className={classes.toolbar} />
         {children}
       </main>
     </div>

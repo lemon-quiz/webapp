@@ -10,7 +10,8 @@ import Link from 'next/link';
 import React from 'react';
 import { UrlObject } from 'url';
 
-import Access, { ExpectedRoleType } from '../../../core/Access';
+import Access from '../../../core/Access';
+import { ExpectedRoleType } from '../../../services/accounts.service';
 
 interface ListitemLinkInterface {
   expectedRole?: ExpectedRoleType;

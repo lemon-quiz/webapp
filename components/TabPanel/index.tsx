@@ -1,5 +1,5 @@
-import {Box, Paper, Typography} from "@material-ui/core";
-import React, {ReactNode} from "react";
+import { Box } from '@material-ui/core';
+import React, { ReactNode } from 'react';
 
 interface TabPanelInterface {
   children: ReactNode;
@@ -10,7 +10,9 @@ interface TabPanelInterface {
 }
 
 export default function TabPanel(props: TabPanelInterface) {
-  const {children, value, index, ...other} = props;
+  const {
+    children, value, index, ...other
+  } = props;
 
   return (
     <div

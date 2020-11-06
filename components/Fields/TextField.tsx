@@ -1,12 +1,14 @@
-import React from 'react'
-import MatTextField from "@material-ui/core/TextField";
-import {FieldRenderProps} from "react-final-form";
+import MatTextField from '@material-ui/core/TextField';
+import React from 'react';
+import { FieldRenderProps } from 'react-final-form';
 
 const TextField = ({
-                     input: {name, onChange, value, ...restInput},
-                     meta,
-                     ...rest
-                   }: FieldRenderProps<string, any>) => (
+  input: {
+    name, onChange, value, ...restInput
+  },
+  meta,
+  ...rest
+}: FieldRenderProps<string, any>) => (
   <MatTextField
     {...rest}
     name={name}
@@ -16,6 +18,6 @@ const TextField = ({
     onChange={onChange}
     value={value}
   />
-)
+);
 
 export default TextField;
