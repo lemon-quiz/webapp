@@ -1,22 +1,22 @@
 import * as React from 'react';
-import {
-  ApiServiceInterface,
-  CookiesServiceInterface, StoreServiceInterface,
-} from 'react-miniverse/src/interfaces';
-
-import AccountsService from '../../services/accounts.service';
-import SnackbarService from '../../services/snackbar.service';
-
-export interface AppContextInterface {
-  apiInstance: ApiServiceInterface;
-  cookiesService: CookiesServiceInterface;
-  accountsService: AccountsService;
-  snackbarService: SnackbarService;
-  storeService: StoreServiceInterface;
-  profile?: any;
-
-  [key: string]: any;
-}
+// import {
+//   ApiServiceInterface,
+//   CookiesServiceInterface, StoreServiceInterface,
+// } from 'react-miniverse/src/interfaces';
+//
+// import AccountsService from '../../services/accounts.service';
+// import SnackbarService from '../../services/snackbar.service';
+//
+// export interface AppContextInterface {
+//   apiInstance: ApiServiceInterface;
+//   cookiesService: CookiesServiceInterface;
+//   accountsService: AccountsService;
+//   snackbarService: SnackbarService;
+//   storeService: StoreServiceInterface;
+//   profile?: any;
+//
+//   [key: string]: any;
+// }
 
 const AppContext = React.createContext<any>({});
 

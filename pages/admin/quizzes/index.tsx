@@ -12,14 +12,14 @@ import AppTable from '../../../components/Table/AppTable';
 import Column from '../../../components/Table/Columns/Column';
 import ColumnActions from '../../../components/Table/Columns/ColumnActions';
 import ColumnDate from '../../../components/Table/Columns/ColumnDate';
-import { ProfileInterface } from '../../../module/accounts.module';
+import { QuizEntity } from '../../../module/quizzes.module';
 import { ServicesModule } from '../../../module/services.module';
 import getPrefixedValues from '../../../utils/getPrefixedValues';
 
 const prefix = 'acc';
 
-function AccountsIndex(): ReactElement {
-  const { accountsService } = useContext<ServicesModule>(AppContext);
+function QuizzesIndex(): ReactElement {
+  const { quizzesService } = useContext<ServicesModule>(AppContext);
   const { push, query } = useRouter();
   const {
     page, q, order_field, order_dir, name, email,
@@ -33,7 +33,9 @@ function AccountsIndex(): ReactElement {
     order_field,
     order_dir,
   };
-  const accounts = useColdOrLoad(accountsService.getAccounts(params), params, true);
+  const quizzes = useColdOrLoad(quizzesService.getQuizzes(params), params, true);
+
+  const handleDelete = () => {};
 
   return (
     <Layout>
@@ -57,13 +59,15 @@ function AccountsIndex(): ReactElement {
 
       <AuthGuard>
         {() => (
-          <Pending loading={!accounts}>
-            <AppTable<ProfileInterface>
+          <Pending loading={!quizzes}>
+            <AppTable<QuizEntity>
               prefix={prefix}
-              resource={accounts}
+              resource={quizzes}
             >
               <Column label="Name" column="name" searchable sortable />
-              <Column label="E-mail" column="email" searchable sortable />
+              <Column label="Language A" column="lang_a" sortable />
+              <Column label="Language B" column="lang_b" sortable />
+              <Column label="No. items" column="items_count" sortable />
               <ColumnDate
                 label="Created"
                 column="created_at"
@@ -75,7 +79,11 @@ function AccountsIndex(): ReactElement {
                 format="fromNow"
                 sortable
               />
-              <ColumnActions column="id" requiredRole="accounts-user" />
+              <ColumnActions
+                column="id"
+                requiredRole="quiz-quiz"
+                handleDelete={handleDelete}
+              />
             </AppTable>
           </Pending>
         )}
@@ -84,6 +92,6 @@ function AccountsIndex(): ReactElement {
   );
 }
 
-AccountsIndex.isAuthorized = ({ services: { accountsService } }: { services: ServicesModule }) => accountsService.hasAccess([{ 'accounts-user': 'read' }]);
+QuizzesIndex.isAuthorized = ({ services: { accountsService } }: { services: ServicesModule }) => accountsService.hasAccess([{ 'quiz-quiz': 'read' }]);
 
-export default AccountsIndex;
+export default QuizzesIndex;

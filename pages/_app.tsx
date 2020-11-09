@@ -12,6 +12,7 @@ import {
 import Snackbar from '../components/Snackbar/Snackbar';
 import { ProfileInterface } from '../module/accounts.module';
 import AccountsService from '../services/accounts.service';
+import QuizzesService from '../services/quizzes.service';
 import SnackbarService from '../services/snackbar.service';
 import adminTheme from '../theme/admin';
 import theme from '../theme/public';
@@ -23,12 +24,14 @@ function initServices() {
   const cookiesService = new CookiesService();
   const apiInstance = new ApiService(cookiesService);
   const accountsService = new AccountsService(apiInstance, storeService, cookiesService);
+  const quizzesService = new QuizzesService(apiInstance, storeService);
   const snackbarService = new SnackbarService();
 
   return {
     cookiesService,
     apiInstance,
     accountsService,
+    quizzesService,
     storeService,
     snackbarService,
   };

@@ -9,11 +9,12 @@ import React, { useContext } from 'react';
 import { Field, Form } from 'react-final-form';
 import { useIntl } from 'react-intl';
 
+import { ServicesModule } from '../../module/services.module';
 import { FormResponse } from '../../utils/FormResponse';
 import Validators from '../../utils/Validator';
 import TextField from '../Fields/TextField';
 import CenteredBox from '../Layout/CenteredBox';
-import AppContext, { AppContextInterface } from '../Provider/AppContext';
+import AppContext from '../Provider/AppContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   avatar: {
@@ -26,7 +27,7 @@ export default function LoginForm() {
   const { formatMessage } = useIntl();
   const router = useRouter();
   const classes = useStyles();
-  const { accountsService } = useContext<AppContextInterface>(AppContext);
+  const { accountsService } = useContext<ServicesModule>(AppContext);
 
   const navigate = (res: any) => {
     if (res.isAxiosError) {

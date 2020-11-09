@@ -3,15 +3,22 @@ import {
   Button, Divider, InputAdornment, Paper, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import { AxiosError, AxiosResponse } from 'axios';
 import arrayMutators from 'final-form-arrays';
-import React from 'react';
+import { useRouter } from 'next/router';
+import React, { useContext, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FieldArray } from 'react-final-form-arrays';
 import { useIntl } from 'react-intl';
+import { useColdOrHot } from 'react-miniverse';
 
+import { ServicesModule } from '../../../module/services.module';
+import { FormResponse } from '../../../utils/FormResponse';
 import Validators from '../../../utils/Validator';
+import FieldRadio from '../../Fields/FieldRadio';
 import TextField from '../../Fields/TextField';
 import Pending from '../../Pending/Pending';
+import AppContext from '../../Provider/AppContext';
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -21,19 +28,50 @@ const useStyles = makeStyles(() => ({
 
 function QuizForm() {
   const styles = useStyles();
+  const [loading, setLoading] = useState(false);
+  const { push, query: { id } } = useRouter();
+  const { quizzesService, snackbarService } = useContext<ServicesModule>(AppContext);
+  const quiz = useColdOrHot(quizzesService.getQuiz(id as string), false, true);
   const { formatMessage } = useIntl();
 
   const validate = (values: any) => Validators.test(values, {
     name: [Validators.required],
-    email: [Validators.required, Validators.email],
+    items: [{
+      item_a: [Validators.required],
+      item_b: [Validators.required],
+    }],
   });
 
+  const navigate = (res: AxiosResponse | AxiosError) => {
+    setLoading(false);
+    if ((res as AxiosError).isAxiosError) {
+      return;
+    }
+
+    snackbarService.success('Successfully submitted the quiz.');
+    push('/admin/quizzes');
+  };
+
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+    if (id && id !== 'add') {
+      await FormResponse.finalFormResponse(
+        quizzesService.updateQuiz(id, data), navigate,
+      );
+      return;
+    }
+
+    await FormResponse.finalFormResponse(
+      quizzesService.createQuiz(data), navigate,
+    );
+  };
+
   return (
-    <Pending loading={false}>
+    <Pending loading={loading}>
       <Paper elevation={3} className={styles.paper}>
         <Form
-          initialValues={{}}
-          onSubmit={() => {}}
+          initialValues={{ ...quiz }}
+          onSubmit={onSubmit}
           mutators={{
             ...arrayMutators,
           }}
@@ -54,8 +92,26 @@ function QuizForm() {
                   margin="normal"
                   label={formatMessage({ defaultMessage: 'Name' })}
                 />
+                <Field
+                  name="lang_a"
+                  component={TextField}
+                  placeholder={formatMessage({ defaultMessage: 'Lang A' })}
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  label={formatMessage({ defaultMessage: 'Lang A' })}
+                />
+                <Field
+                  name="lang_b"
+                  component={TextField}
+                  placeholder={formatMessage({ defaultMessage: 'Lang B' })}
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  label={formatMessage({ defaultMessage: 'Lang B' })}
+                />
 
-                <FieldArray name="question">
+                <FieldArray name="items">
                   {({ fields }) => (
                     <div>
                       {fields.map((name, index) => (
@@ -63,13 +119,13 @@ function QuizForm() {
                           <Box display="flex" flexDirection="row" alignContent="space-between">
                             <Box mr={1} display="flex" flexGrow={1}>
                               <Field
-                                name={`${name}.lang_1`}
+                                name={`${name}.item_a`}
                                 component={TextField}
-                                placeholder="Language 1"
+                                placeholder={formatMessage({ defaultMessage: 'Item language A' })}
                                 variant="outlined"
                                 fullWidth
                                 margin="normal"
-                                label={formatMessage({ defaultMessage: 'String 1' })}
+                                label={formatMessage({ defaultMessage: 'Item language A' })}
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
@@ -81,13 +137,13 @@ function QuizForm() {
                             </Box>
                             <Box mr={1} display="flex" flexGrow={1}>
                               <Field
-                                name={`${name}.lang_2`}
+                                name={`${name}.item_b`}
                                 component={TextField}
-                                placeholder="Language 2"
+                                placeholder={formatMessage({ defaultMessage: 'Item language B' })}
                                 variant="outlined"
                                 fullWidth
                                 margin="normal"
-                                label={formatMessage({ defaultMessage: 'String 2' })}
+                                label={formatMessage({ defaultMessage: 'Item language B' })}
                               />
                             </Box>
                             <Box display="flex" flexShrink={1} alignSelf="center">
@@ -103,6 +159,24 @@ function QuizForm() {
                               </div>
                             </Box>
                           </Box>
+                          <Field
+                            type="radio"
+                            name={`${name}.group`}
+                            value="1"
+                            component={FieldRadio}
+                          />
+                          <Field
+                            type="radio"
+                            name={`${name}.group`}
+                            value="2"
+                            component={FieldRadio}
+                          />
+                          <Field
+                            type="radio"
+                            name={`${name}.group`}
+                            value="3"
+                            component={FieldRadio}
+                          />
                           <Divider />
                         </div>
                       ))}
@@ -110,9 +184,9 @@ function QuizForm() {
                         variant="contained"
                         color="primary"
                         type="button"
-                        onClick={() => fields.push({ lang_1: '', lang_2: '' })}
+                        onClick={() => fields.push({ item_a: '', item_b: '', group: '1' })}
                       >
-                        Add
+                        Add item
                       </Button>
                     </div>
                   )}

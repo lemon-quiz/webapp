@@ -1,8 +1,10 @@
-import React, {useContext} from "react";
-import AppContext, {AppContextInterface} from "../Provider/AppContext";
+import React, { useContext } from 'react';
 
-export default function AuthGuard({children}: { children: (params: any) => React.ReactElement }) {
-  const {storeService} = useContext<AppContextInterface>(AppContext)
+import { ServicesModule } from '../../module/services.module';
+import AppContext from '../Provider/AppContext';
+
+export default function AuthGuard({ children }: { children: (params: any) => React.ReactElement }) {
+  const { storeService } = useContext<ServicesModule>(AppContext);
 
   if (!storeService.has('AccountsService', 'profile')) {
     return (<div>unauthorized</div>);
@@ -10,7 +12,7 @@ export default function AuthGuard({children}: { children: (params: any) => React
 
   return (
     <>
-      {children({x: 'y'})}
+      {children({ x: 'y' })}
     </>
-  )
+  );
 }

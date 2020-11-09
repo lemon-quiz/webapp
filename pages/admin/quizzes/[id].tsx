@@ -1,12 +1,13 @@
 import {
   Box, Tab, Tabs, Typography,
 } from '@material-ui/core';
+import { AxiosError } from 'axios';
 import React, { ChangeEvent, useState } from 'react';
 
 import QuizForm from '../../../components/Admin/Quizzes/QuizForm';
 import Layout from '../../../components/Layout/Layout';
-import { AppContextInterface } from '../../../components/Provider/AppContext';
 import TabPanel from '../../../components/TabPanel';
+import { ServicesModule } from '../../../module/services.module';
 
 function Quiz() {
   const [tab, setTab] = useState(0);
@@ -38,6 +39,14 @@ function Quiz() {
   );
 }
 
-Quiz.isAuthorized = ({ services: { accountsService } }: { services: AppContextInterface }) => accountsService.hasAccess([{ 'quiz-quiz': 'write' }]);
+Quiz.isAuthorized = ({ services: { accountsService } }: { services: ServicesModule }) => accountsService.hasAccess([{ 'quiz-quiz': 'write' }]);
+
+Quiz.getInitialProps = async (ctx: any, { quizzesService }: ServicesModule) => {
+  if (ctx?.query?.id && ctx?.query?.id !== 'add') {
+    await quizzesService.getQuiz(ctx.query.id, { include: 'items' }).toPromise().catch((error: AxiosError) => console.warn(error.message));
+  }
+
+  return {};
+};
 
 export default Quiz;

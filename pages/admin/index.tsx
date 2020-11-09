@@ -3,11 +3,12 @@ import { useColdOrHot } from 'react-miniverse';
 
 import AuthGuard from '../../components/Guards/AuthGuard';
 import Layout from '../../components/Layout/Layout';
-import AppContext, { AppContextInterface } from '../../components/Provider/AppContext';
+import AppContext from '../../components/Provider/AppContext';
+import { ServicesModule } from '../../module/services.module';
 import Link from '../../src/Link';
 
 export default function index() {
-  const { accountsService } = useContext<AppContextInterface>(AppContext);
+  const { accountsService } = useContext<ServicesModule>(AppContext);
   const profile = useColdOrHot(accountsService.profile());
 
   return (

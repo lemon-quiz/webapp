@@ -7,11 +7,12 @@ import { Field, Form } from 'react-final-form';
 import { useIntl } from 'react-intl';
 
 import { ProfileInterface } from '../../../module/accounts.module';
+import { ServicesModule } from '../../../module/services.module';
 import { FormResponse } from '../../../utils/FormResponse';
 import Validators from '../../../utils/Validator';
 import TextField from '../../Fields/TextField';
 import Pending from '../../Pending/Pending';
-import AppContext, { AppContextInterface } from '../../Provider/AppContext';
+import AppContext from '../../Provider/AppContext';
 
 interface AccountFormInterface {
   account: ProfileInterface;
@@ -28,7 +29,7 @@ function AccountForm({ account }: AccountFormInterface) {
   const [loading, setLoading] = useState(false);
   const { formatMessage } = useIntl();
   const { push, query: { id } } = useRouter();
-  const { accountsService, snackbarService } = useContext<AppContextInterface>(AppContext);
+  const { accountsService, snackbarService } = useContext<ServicesModule>(AppContext);
 
   const navigate = (res: AxiosResponse | AxiosError) => {
     setLoading(false);

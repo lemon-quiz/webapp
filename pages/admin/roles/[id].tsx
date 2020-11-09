@@ -13,8 +13,9 @@ import RoleEdit from '../../../components/Admin/Roles/EditForm';
 import Accounts from '../../../components/Admin/Shared/Accounts';
 import Events from '../../../components/Events/Events';
 import Layout from '../../../components/Layout/Layout';
-import AppContext, { AppContextInterface } from '../../../components/Provider/AppContext';
+import AppContext from '../../../components/Provider/AppContext';
 import TabPanel from '../../../components/TabPanel';
+import { ServicesModule } from '../../../module/services.module';
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -25,7 +26,7 @@ const useStyles = makeStyles(() => ({
 function Role() {
   const [tab, setTab] = useState(0);
   const { query: { id } } = useRouter();
-  const { accountsService } = useContext<AppContextInterface>(AppContext);
+  const { accountsService } = useContext<ServicesModule>(AppContext);
   const role = useColdOrHot(accountsService.getRole(id as string), false, true);
   const styles = useStyles();
 
@@ -81,9 +82,9 @@ function Role() {
   );
 }
 
-Role.isAuthorized = ({ services: { accountsService } }: { services: AppContextInterface }) => accountsService.hasAccess([{ 'accounts-role': 'update' }]);
+Role.isAuthorized = ({ services: { accountsService } }: { services: ServicesModule }) => accountsService.hasAccess([{ 'accounts-role': 'update' }]);
 
-Role.getInitialProps = async (ctx: any, { accountsService }: AppContextInterface) => {
+Role.getInitialProps = async (ctx: any, { accountsService }: ServicesModule) => {
   if (ctx?.query?.id && ctx?.query?.id !== 'add') {
     await accountsService
       .getRole(ctx.query.id).toPromise()

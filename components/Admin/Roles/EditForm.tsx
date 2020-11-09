@@ -7,12 +7,13 @@ import { Field, Form } from 'react-final-form';
 import { useIntl } from 'react-intl';
 
 import { RolesEntity } from '../../../module/accounts.module';
+import { ServicesModule } from '../../../module/services.module';
 import { FormResponse } from '../../../utils/FormResponse';
 import Validators from '../../../utils/Validator';
 import FieldCheckbox from '../../Fields/FieldCheckbox';
 import TextField from '../../Fields/TextField';
 import Pending from '../../Pending/Pending';
-import AppContext, { AppContextInterface } from '../../Provider/AppContext';
+import AppContext from '../../Provider/AppContext';
 
 interface RoleEditInterface {
   role: RolesEntity;
@@ -29,7 +30,7 @@ function RoleEdit({ role }: RoleEditInterface) {
   const [loading, setLoading] = useState(false);
   const { formatMessage } = useIntl();
   const { push, query: { id } } = useRouter();
-  const { accountsService, snackbarService } = useContext<AppContextInterface>(AppContext);
+  const { accountsService, snackbarService } = useContext<ServicesModule>(AppContext);
 
   const navigate = (res: AxiosResponse | AxiosError) => {
     setLoading(false);
@@ -116,7 +117,7 @@ function RoleEdit({ role }: RoleEditInterface) {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  disabled={!valid && !submitFailed}
+                  disabled={(!valid && !submitFailed) || !accountsService.hasAccess([{ 'accounts-role': 'update' }])}
                 >
                   {formatMessage({ defaultMessage: 'Save' })}
                 </Button>

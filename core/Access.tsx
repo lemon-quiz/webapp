@@ -1,6 +1,7 @@
 import React, { ReactElement, useContext } from 'react';
 
-import AppContext, { AppContextInterface } from '../components/Provider/AppContext';
+import AppContext from '../components/Provider/AppContext';
+import { ServicesModule } from '../module/services.module';
 import {
   ExpectedRoleType,
 } from '../services/accounts.service';
@@ -13,7 +14,7 @@ interface AccessInterface {
 }
 
 export default function Access({ children, expectedRole = [], ...rest }: AccessInterface) {
-  const { accountsService } = useContext<AppContextInterface>(AppContext);
+  const { accountsService } = useContext<ServicesModule>(AppContext);
   const access = accountsService.hasAccess(expectedRole);
 
   if (!access) {

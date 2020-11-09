@@ -9,7 +9,8 @@ import { useIntl } from 'react-intl';
 
 import TextField from '../../components/Fields/TextField';
 import CenteredBox from '../../components/Layout/CenteredBox';
-import AppContext, { AppContextInterface } from '../../components/Provider/AppContext';
+import AppContext from '../../components/Provider/AppContext';
+import { ServicesModule } from '../../module/services.module';
 import Validators from '../../utils/Validator';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function Register() {
   const { formatMessage } = useIntl();
   const classes = useStyles();
-  const { apiInstance } = useContext<AppContextInterface>(AppContext);
+  const { apiInstance } = useContext<ServicesModule>(AppContext);
 
   const onSubmit = (data: any) => {
     apiInstance.get(`${process.env.API_ACCOUNTS}/register`, data);

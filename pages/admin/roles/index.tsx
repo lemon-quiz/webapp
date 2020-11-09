@@ -7,7 +7,7 @@ import { useColdOrLoad } from 'react-miniverse';
 import AuthGuard from '../../../components/Guards/AuthGuard';
 import Layout from '../../../components/Layout/Layout';
 import Pending from '../../../components/Pending/Pending';
-import AppContext, { AppContextInterface } from '../../../components/Provider/AppContext';
+import AppContext from '../../../components/Provider/AppContext';
 import AppTable from '../../../components/Table/AppTable';
 import Column from '../../../components/Table/Columns/Column';
 import ColumnActions from '../../../components/Table/Columns/ColumnActions';
@@ -15,9 +15,10 @@ import ColumnBoolean from '../../../components/Table/Columns/ColumnBoolean';
 import ColumnDate from '../../../components/Table/Columns/ColumnDate';
 import Access from '../../../core/Access';
 import { RolesEntity } from '../../../module/accounts.module';
+import { ServicesModule } from '../../../module/services.module';
 
 function RolesIndex(): ReactElement {
-  const { accountsService, snackbarService } = useContext<AppContextInterface>(AppContext);
+  const { accountsService, snackbarService } = useContext<ServicesModule>(AppContext);
   const router = useRouter();
   const {
     query: {
@@ -100,6 +101,6 @@ function RolesIndex(): ReactElement {
   );
 }
 
-RolesIndex.isAuthorized = async ({ services }: { services: AppContextInterface }) => services.storeService.has('AccountsService', 'profile');
+RolesIndex.isAuthorized = async ({ services }: { services: ServicesModule }) => services.storeService.has('AccountsService', 'profile');
 
 export default RolesIndex;

@@ -19,13 +19,13 @@ export default class Validators {
       return;
     }
 
-    const regex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+    const regex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})');
     if (!regex.test(values[name])) {
       errors[name] = `${name} is not a strong enough. At least 1 uppercase character, 1 numeric character and 1 special character.`;
     }
 
     if (values[name] !== values[`${name}_repeat`]) {
-      errors[name] = `passwords do not match.`;
+      errors[name] = 'passwords do not match.';
     }
   }
 
@@ -35,17 +35,34 @@ export default class Validators {
     }
 
     if (!validator.isEmail(values[name])) {
-      errors[name] = `Not a valid e-mailaddress `;
+      errors[name] = 'Not a valid e-mailaddress ';
     }
   }
 
   static test = (values: any, requirements: any): any => {
-    const errors = {};
+    const errors: any = {};
     Object.keys(requirements).forEach((name: string) => {
-      const validators: Array<any> = requirements[name]
-      validators.forEach((validator) => {
-        validator(errors, name, values)
-      })
+      const validators: Array<any> = requirements[name];
+      if (Array.isArray(validators)) {
+        validators.forEach((validate) => {
+          if (typeof validate === 'function') {
+            validate(errors, name, values);
+          }
+
+          if (typeof validator === 'object' && Array.isArray(values[name])) {
+            values[name].forEach((value: any, index: number) => {
+              const error = Validators.test(value, validate);
+              if (Object.keys(error).length > 0) {
+                if (!errors[name]) {
+                  errors[name] = [];
+                }
+
+                errors[name][index] = error;
+              }
+            });
+          }
+        });
+      }
     });
 
     return errors;
